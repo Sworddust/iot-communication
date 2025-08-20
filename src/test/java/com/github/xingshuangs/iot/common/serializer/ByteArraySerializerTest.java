@@ -27,6 +27,7 @@ package com.github.xingshuangs.iot.common.serializer;
 import com.github.xingshuangs.iot.common.enums.EDataType;
 import org.junit.Test;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -268,5 +269,40 @@ public class ByteArraySerializerTest {
         byte[] actual = serializer.toByteArray(bean);
         assertArrayEquals(expect, actual);
         bean.getInt32Data().byteValue();
+    }
+
+    @Test
+    public void toCharsets() {
+        ByteArraySerializer serializer = ByteArraySerializer.newInstance();
+        serializer.setCharsets(StandardCharsets.UTF_8);
+        ByteArrayCharsetBean expect = new ByteArrayCharsetBean();
+        expect.setBoolData(true);
+        expect.setByteData((byte) 0x01);
+        expect.setStringData("Hello, 世界");
+        byte[] expectBytes = serializer.toByteArray(expect);
+        ByteArrayCharsetBean actual = serializer.toObject(ByteArrayCharsetBean.class, expectBytes);
+        assertTrue(actual.getBoolData());
+        assertEquals((byte) 0x01, actual.getByteData().byteValue());
+        assertEquals("Hello, 世界", actual.getStringData());
+
+        serializer.setCharsets(StandardCharsets.UTF_16);
+        expect.setBoolData(true);
+        expect.setByteData((byte) 0x01);
+        expect.setStringData("Hello, 世界");
+        expectBytes = serializer.toByteArray(expect);
+        actual = serializer.toObject(ByteArrayCharsetBean.class, expectBytes);
+        assertTrue(actual.getBoolData());
+        assertEquals((byte) 0x01, actual.getByteData().byteValue());
+        assertEquals("Hello, 世界", actual.getStringData());
+
+        serializer.setCharsets(StandardCharsets.US_ASCII);
+        expect.setBoolData(true);
+        expect.setByteData((byte) 0x01);
+        expect.setStringData("Hello, 1ABD");
+        expectBytes = serializer.toByteArray(expect);
+        actual = serializer.toObject(ByteArrayCharsetBean.class, expectBytes);
+        assertTrue(actual.getBoolData());
+        assertEquals((byte) 0x01, actual.getByteData().byteValue());
+        assertEquals("Hello, 1ABD", actual.getStringData());
     }
 }

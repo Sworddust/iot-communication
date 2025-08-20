@@ -29,8 +29,10 @@ import com.github.xingshuangs.iot.common.buff.ByteReadBuff;
 import com.github.xingshuangs.iot.common.buff.ByteWriteBuff;
 import com.github.xingshuangs.iot.exceptions.ByteArrayParseException;
 import com.github.xingshuangs.iot.utils.BooleanUtil;
+import lombok.Data;
 
 import java.lang.reflect.Field;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -47,11 +49,17 @@ import static com.github.xingshuangs.iot.common.enums.EDataType.STRING;
  *
  * @author xingshuang
  */
+@Data
 public class ByteArraySerializer implements IByteArraySerializable {
 
     public static ByteArraySerializer newInstance() {
         return new ByteArraySerializer();
     }
+
+    /**
+     * 字符集  (默认US_ASCII)
+     */
+    private Charset charsets = StandardCharsets.US_ASCII;
 
     @Override
     public <T> T toObject(final Class<T> targetClass, final byte[] src) {
@@ -227,7 +235,7 @@ public class ByteArraySerializer implements IByteArraySerializable {
                 field.set(bean, variable.getCount() == 1 ? float64s.get(0) : float64s);
                 break;
             case STRING:
-                field.set(bean, buff.getString(variable.getByteOffset(), variable.getCount()));
+                field.set(bean, buff.getString(variable.getByteOffset(), variable.getCount(), this.charsets));
                 break;
             default:
                 // 提取数据的时候无法识别数据类型
@@ -298,7 +306,7 @@ public class ByteArraySerializer implements IByteArraySerializable {
                 buff.putDouble((Double) data, variable.byteOffset() + index * variable.type().getByteLength(), variable.littleEndian(), variable.format());
                 break;
             case STRING:
-                buff.putString((String) data, StandardCharsets.US_ASCII, variable.byteOffset());
+                buff.putString((String) data, this.charsets, variable.byteOffset());
                 break;
             default:
                 // 填充数据的时候无法识别数据类型
@@ -316,7 +324,7 @@ public class ByteArraySerializer implements IByteArraySerializable {
      */
     private void fillListData(ByteArrayVariable variable, Object data, ByteWriteBuff buff) {
         if (variable.type() == STRING) {
-            buff.putString((String) data, StandardCharsets.US_ASCII, variable.byteOffset());
+            buff.putString((String) data, this.charsets, variable.byteOffset());
         } else {
             List<Object> list = (List<Object>) data;
             for (int i = 0; i < list.size(); i++) {

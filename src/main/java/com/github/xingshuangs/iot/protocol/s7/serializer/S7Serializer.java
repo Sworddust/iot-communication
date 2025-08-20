@@ -35,6 +35,7 @@ import com.github.xingshuangs.iot.protocol.s7.model.DataItem;
 import com.github.xingshuangs.iot.protocol.s7.model.RequestItem;
 import com.github.xingshuangs.iot.protocol.s7.service.S7PLC;
 import com.github.xingshuangs.iot.protocol.s7.utils.AddressUtil;
+import lombok.Data;
 
 import java.lang.reflect.Field;
 import java.nio.charset.Charset;
@@ -51,12 +52,19 @@ import java.util.stream.Collectors;
  *
  * @author xingshuang
  */
+@Data
 public class S7Serializer implements IPLCSerializable {
 
     private final S7PLC s7PLC;
 
+    /**
+     * 字符集  (默认US_ASCII)
+     */
+    private Charset charsets;
+
     public S7Serializer(S7PLC s7PLC) {
         this.s7PLC = s7PLC;
+        this.charsets = Charset.forName("GB2312");
     }
 
     /**
@@ -309,7 +317,7 @@ public class S7Serializer implements IPLCSerializable {
                 break;
             case STRING:
                 int length = buff.getByteToInt(0);
-                item.getField().set(result, buff.getString(1, Math.min(length, item.getCount()), Charset.forName("GB2312")));
+                item.getField().set(result, buff.getString(1, Math.min(length, item.getCount()), this.charsets));
                 break;
             case DATE:
                 LocalDate date = LocalDate.of(1990, 1, 1).plusDays(buff.getUInt16());
@@ -479,7 +487,7 @@ public class S7Serializer implements IPLCSerializable {
                         .putDouble((Double) data).getData()));
                 break;
             case STRING:
-                byte[] bytes = ((String) data).getBytes(Charset.forName("GB2312"));
+                byte[] bytes = ((String) data).getBytes(this.charsets);
                 int actualLength = Math.min(bytes.length, item.getCount());
                 byte[] targetBytes = new byte[1 + actualLength];
                 targetBytes[0] = (byte) actualLength;

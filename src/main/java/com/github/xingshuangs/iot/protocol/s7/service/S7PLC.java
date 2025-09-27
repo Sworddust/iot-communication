@@ -549,6 +549,34 @@ public class S7PLC extends PLCNetwork {
         return LocalDateTime.of(year, month, dayOfMonth, hour, minute, second, (int) nanoOfSecond);
     }
 
+    /**
+     * Read counter, 2-bytes.
+     * (读取计数器数据)
+     *
+     * @param address address string
+     * @return counter
+     */
+    public int readCounter(String address) {
+        byte[] bytes = this.readByte(address, 1);
+        return BCDUtil.toInt(bytes, 3);
+    }
+
+    /**
+     * Read timer, 2-bytes.
+     * 02 25 = 1000 * 25 = 25000ms
+     * (读取定时器数据)
+     *
+     * @param address address string
+     * @return time, ms
+     */
+    public int readTimer(String address) {
+        byte[] bytes = this.readByte(address, 1);
+        byte tmp = (byte) ((bytes[0] >> 4) & 0x03);
+        ETimerBase timerBase = ETimerBase.from(tmp);
+        int timeValue = BCDUtil.toInt(bytes, 3);
+        return timeValue * timerBase.getTimeBase();
+    }
+
     //endregion
 
     //region 写入数据

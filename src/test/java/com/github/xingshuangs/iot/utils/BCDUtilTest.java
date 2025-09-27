@@ -24,6 +24,7 @@
 
 package com.github.xingshuangs.iot.utils;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -37,8 +38,40 @@ public class BCDUtilTest {
 
     @Test
     public void toByte() {
-        byte[] expect = new byte[]{(byte) 0x23,(byte) 0x01};
+        byte[] expect = new byte[]{(byte) 0x23, (byte) 0x01};
         int i = BCDUtil.toInt(expect);
         System.out.println(i);
+        Assert.assertEquals(2301, i);
+    }
+
+    @Test
+    public void toByte1() {
+        byte[] expect = new byte[]{(byte) 0x23, (byte) 0x01};
+        int i = BCDUtil.toInt(expect, 3);
+        System.out.println(i);
+        Assert.assertEquals(301, i);
+    }
+
+    @Test
+    public void numDigits() {
+        int[] testValues = {0, 5, 123, 98765, -4567};
+        for (int val : testValues) {
+            System.out.printf("%d 的位数 = %d%n", val, BCDUtil.numDigits(val));
+        }
+        double v = Math.log10(10056);
+        System.out.println(v);
+    }
+
+    @Test
+    public void toBytes() {
+        int[] testValues = {0, 5, 25, 123, 1234, 987654};
+        for (int val : testValues) {
+            byte[] bcd = BCDUtil.toBytes(val);
+            System.out.printf("%d -> BCD: ", val);
+            for (byte b : bcd) {
+                System.out.printf("0x%02X ", b);
+            }
+            System.out.println();
+        }
     }
 }

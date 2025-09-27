@@ -45,21 +45,37 @@ public class BCDUtil {
      * @return int result
      */
     public static int toInt(byte data) {
-        return ((data >> 4) * 10) + (data & 0x0F);
+        return (((data >> 4) & 0x0F) * 10) + (data & 0x0F);
     }
 
     /**
      * Byte array to int by BCD.
+     * 0x23 0x01 = 2301 <br>
      *
      * @param data byte array
      * @return int result
      */
     public static int toInt(byte[] data) {
         int result = 0;
-        for (int i = data.length - 1; i >= 0; i--) {
-            result += toInt(data[i]) * Math.pow(100, i);
+        for (byte b : data) {
+            result = result * 100 + toInt(b);
         }
         return result;
+    }
+
+    /**
+     * Byte array to int by BCD with max digits.<br>
+     * 0x23 0x01 = 2301 <br>
+     * maxDigits = 3 -> 301
+     *
+     * @param data      byte array
+     * @param maxDigits max digits
+     * @return int result
+     */
+    public static int toInt(byte[] data, int maxDigits) {
+        int value = toInt(data);
+        int maxValue = (int) Math.pow(10, maxDigits);
+        return value % maxValue;
     }
 
     /**
@@ -73,5 +89,49 @@ public class BCDUtil {
             throw new IllegalArgumentException("data > 99 || data < 0");
         }
         return (byte) (((data / 10) << 4) | (data % 10));
+    }
+
+    /**
+     * Get the number of digits in an integer.
+     * 获取整数的位数
+     *
+     * @param value int value
+     * @return number of digits
+     */
+    public static int numDigits(int value) {
+        if (value == 0) return 1;
+
+        return (int) Math.floor(Math.log10(Math.abs(value))) + 1;
+    }
+
+    /**
+     * Int to byte array by BCD.
+     * 2301 -> 0x23 0x01 <br>
+     * 123 -> 0x01 0x23 <br>
+     * 5 -> 0x05 <br>
+     *
+     * @param value int value
+     * @return byte array
+     */
+    public static byte[] toBytes(int value) {
+        if (value < 0) {
+            throw new IllegalArgumentException("BCD只支持非负整数");
+        }
+
+        // 计算需要多少个字节
+        int number = numDigits(value);
+        int byteLength = number % 2 == 0 ? number / 2 : number / 2 + 1;
+        byte[] bcd = new byte[byteLength];
+        int temp = value;
+        // 从低字节向高字节填充
+        for (int i = byteLength - 1; i >= 0; i--) {
+            int low = temp % 10;
+            temp /= 10;
+            int high = temp % 10;
+            temp /= 10;
+            bcd[i] = (byte) ((high << 4) | low);
+        }
+
+        return bcd;
     }
 }

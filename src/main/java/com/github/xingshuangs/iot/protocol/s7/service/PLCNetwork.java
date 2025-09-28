@@ -330,12 +330,12 @@ public class PLCNetwork extends TcpClientBasic {
         AckHeader ackHeader = (AckHeader) ack.getHeader();
         if (ackHeader.getErrorClass() == null) {
             // 响应异常，未知异常
-            throw new S7CommException(String.format("Response exception, unknown exception：%s", ErrorCode.MAP.getOrDefault(ackHeader.getErrorCode(), "The error code does not exist")));
+            throw new S7CommException(String.format("Response exception, unknown exception：%s", ErrorCode.getMessage(ackHeader.getErrorCode())));
         }
         if (ackHeader.getErrorClass() != EErrorClass.NO_ERROR) {
             // 响应异常，错误类型：%s，错误原因
             throw new S7CommException(String.format("Response exception, error type: %s, error cause：%s",
-                    ackHeader.getErrorClass().getDescription(), ErrorCode.MAP.getOrDefault(ackHeader.getErrorCode(), "The error code does not exist")));
+                    ackHeader.getErrorClass().getDescription(), ErrorCode.getMessage(ackHeader.getErrorCode())));
         }
         // 发送和接收的PDU编号一致
         if (ackHeader.getPduReference() != req.getHeader().getPduReference()) {

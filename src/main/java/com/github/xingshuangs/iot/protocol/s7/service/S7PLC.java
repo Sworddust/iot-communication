@@ -512,8 +512,8 @@ public class S7PLC extends PLCNetwork {
      * @return date
      */
     public LocalDate readDate(String address) {
-        int offset = this.readUInt16(address);
-        return LocalDate.of(1990, 1, 1).plusDays(offset);
+        byte[] bytes = this.readByte(address, 2);
+        return this.byteArrayToDate(bytes);
     }
 
     /**
@@ -524,8 +524,8 @@ public class S7PLC extends PLCNetwork {
      * @return localTime
      */
     public LocalTime readTimeOfDay(String address) {
-        long value = this.readUInt32(address);
-        return LocalTime.ofSecondOfDay(value / 1000);
+        byte[] bytes = this.readByte(address, 4);
+        return this.byteArrayToTimeOfDay(bytes);
     }
 
     /**
@@ -537,28 +537,19 @@ public class S7PLC extends PLCNetwork {
      */
     public LocalDateTime readDTL(String address) {
         byte[] bytes = this.readByte(address, 12);
-        ByteReadBuff buff = ByteReadBuff.newInstance(bytes);
-        int year = buff.getUInt16();
-        int month = buff.getByteToInt();
-        int dayOfMonth = buff.getByteToInt();
-        int week = buff.getByteToInt();
-        int hour = buff.getByteToInt();
-        int minute = buff.getByteToInt();
-        int second = buff.getByteToInt();
-        long nanoOfSecond = buff.getUInt32();
-        return LocalDateTime.of(year, month, dayOfMonth, hour, minute, second, (int) nanoOfSecond);
+        return this.byteArrayToDTL(bytes);
     }
 
     /**
      * Read counter, 2-bytes.
-     * (读取计数器数据)
+     * (读取计数器数据, 取值范围：0 … 999（最多 3 位十进制数）)
      *
      * @param address address string
      * @return counter
      */
     public int readCounter(String address) {
-        byte[] bytes = this.readByte(address, 1);
-        return BCDUtil.toInt(bytes, 3);
+        DataItem dataItem = this.readS7Data(AddressUtil.parse(address, 1, EParamVariableType.COUNTER));
+        return this.byteArrayToCounter(dataItem.getData());
     }
 
     /**
@@ -570,11 +561,8 @@ public class S7PLC extends PLCNetwork {
      * @return time, ms
      */
     public int readTimer(String address) {
-        byte[] bytes = this.readByte(address, 1);
-        byte tmp = (byte) ((bytes[0] >> 4) & 0x03);
-        ETimerBase timerBase = ETimerBase.from(tmp);
-        int timeValue = BCDUtil.toInt(bytes, 3);
-        return timeValue * timerBase.getTimeBase();
+        DataItem dataItem = this.readS7Data(AddressUtil.parse(address, 1, EParamVariableType.TIMER));
+        return this.byteArrayToTimer(dataItem.getData());
     }
 
     //endregion
@@ -806,9 +794,8 @@ public class S7PLC extends PLCNetwork {
      * @param date    date
      */
     public void writeDate(String address, LocalDate date) {
-        LocalDate start = LocalDate.of(1990, 1, 1);
-        long value = date.toEpochDay() - start.toEpochDay();
-        this.writeUInt16(address, (int) value);
+        byte[] bytes = this.dateToByteArray(date);
+        this.writeByte(address, bytes);
     }
 
     /**
@@ -819,8 +806,8 @@ public class S7PLC extends PLCNetwork {
      * @param time    time of day
      */
     public void writeTimeOfDay(String address, LocalTime time) {
-        int value = time.toSecondOfDay();
-        this.writeUInt32(address, (long) value * 1000);
+        byte[] bytes = this.timeOfDayToByteArray(time);
+        this.writeByte(address, bytes);
     }
 
     /**
@@ -831,17 +818,8 @@ public class S7PLC extends PLCNetwork {
      * @param dateTime LocalDateTime
      */
     public void writeDTL(String address, LocalDateTime dateTime) {
-        byte[] data = ByteWriteBuff.newInstance(12)
-                .putShort(dateTime.getYear())
-                .putByte(dateTime.getMonthValue())
-                .putByte(dateTime.getDayOfMonth())
-                .putByte(dateTime.getDayOfWeek().getValue())
-                .putByte(dateTime.getHour())
-                .putByte(dateTime.getMinute())
-                .putByte(dateTime.getSecond())
-                .putInteger(dateTime.getNano())
-                .getData();
-        this.writeByte(address, data);
+        byte[] bytes = this.dtlToByteArray(dateTime);
+        this.writeByte(address, bytes);
     }
 
     //endregion
@@ -1293,6 +1271,140 @@ public class S7PLC extends PLCNetwork {
         RequestNckItem item = new RequestNckItem(ENckArea.N_NCK, 1, 1, 1, ENckModule.SALA, 1);
         DataItem dataItem = this.readS7NckData(item);
         return ByteReadBuff.newInstance(dataItem.getData(), true).getUInt32();
+    }
+
+    //endregion
+
+    //region 其他数据转换
+
+    /**
+     * Convert byte array to timer.
+     * (将字节数组转换为timer，毫秒)
+     *
+     * @param src time byte array
+     * @return milliseconds
+     */
+    public int byteArrayToTimer(byte[] src) {
+        if (src == null || src.length != 2) {
+            throw new IllegalArgumentException("Timer byte array length must be 2");
+        }
+        byte timerBaseByte = (byte) ((src[0] >> 4) & 0x03);
+        ETimerBase timerBase = ETimerBase.from(timerBaseByte);
+        int timeValue = BCDUtil.toInt(src, 3);
+        return timeValue * timerBase.getTimeBase();
+    }
+
+    /**
+     * Convert byte array to counter.
+     * (将字节数组转换为计数器)
+     *
+     * @param src counter byte array
+     * @return int value
+     */
+    public int byteArrayToCounter(byte[] src) {
+        if (src == null || src.length != 2) {
+            throw new IllegalArgumentException("Counter byte array length must be 2");
+        }
+        // 0-999
+        return BCDUtil.toInt(src, 3);
+    }
+
+    /**
+     * Convert byte array to date.
+     * (将字节数组转换为日期)
+     *
+     * @param src date byte array
+     * @return LocalDate
+     */
+    public LocalDate byteArrayToDate(byte[] src) {
+        if (src == null || src.length != 2) {
+            throw new IllegalArgumentException("Date byte array length must be 2");
+        }
+        int offset = ByteReadBuff.newInstance(src).getUInt16();
+        return LocalDate.of(1990, 1, 1).plusDays(offset);
+    }
+
+    /**
+     * Convert byte array to time of day.
+     * (将字节数组转换为时间)
+     *
+     * @param src time of day byte array
+     * @return LocalTime
+     */
+    public LocalTime byteArrayToTimeOfDay(byte[] src) {
+        if (src == null || src.length != 4) {
+            throw new IllegalArgumentException("TimeOfDay byte array length must be 4");
+        }
+        long value = ByteReadBuff.newInstance(src).getUInt32();
+        return LocalTime.ofSecondOfDay(value / 1000);
+    }
+
+    /**
+     * Convert byte array to dtl.
+     * (将字节数组转换为dtl)
+     *
+     * @param src date and time byte array
+     * @return LocalDateTime
+     */
+    public LocalDateTime byteArrayToDTL(byte[] src) {
+        if (src == null || src.length != 12) {
+            throw new IllegalArgumentException("Counter byte array length must be 12");
+        }
+        ByteReadBuff buff = ByteReadBuff.newInstance(src);
+        int year = buff.getUInt16();
+        int month = buff.getByteToInt();
+        int dayOfMonth = buff.getByteToInt();
+        int week = buff.getByteToInt();
+        int hour = buff.getByteToInt();
+        int minute = buff.getByteToInt();
+        int second = buff.getByteToInt();
+        long nanoOfSecond = buff.getUInt32();
+        return LocalDateTime.of(year, month, dayOfMonth, hour, minute, second, (int) nanoOfSecond);
+    }
+
+    /**
+     * Convert date to byte array.
+     * (将日期转换为字节数组)
+     *
+     * @param date date
+     * @return byte array
+     */
+    public byte[] dateToByteArray(LocalDate date) {
+        LocalDate start = LocalDate.of(1990, 1, 1);
+        long value = date.toEpochDay() - start.toEpochDay();
+        return ByteWriteBuff.newInstance(2).putShort((int) value).getData();
+    }
+
+    /**
+     * Convert time of day to byte array.
+     * (将时间转换为字节数组)
+     *
+     * @param time time of day
+     * @return byte array
+     */
+    public byte[] timeOfDayToByteArray(LocalTime time) {
+        int value = time.toSecondOfDay() * 1000;
+        return ByteWriteBuff.newInstance(4).putInteger(value).getData();
+    }
+
+    /**
+     * Convert dtl to byte array.
+     * (将dtl转换为字节数组)
+     *
+     * @param dateTime date time
+     * @return byte array
+     */
+    public byte[] dtlToByteArray(LocalDateTime dateTime) {
+        return ByteWriteBuff.newInstance(12)
+                .putShort(dateTime.getYear())
+                .putByte(dateTime.getMonthValue())
+                .putByte(dateTime.getDayOfMonth())
+                .putByte(dateTime.getDayOfWeek().getValue())
+                .putByte(dateTime.getHour())
+                .putByte(dateTime.getMinute())
+                .putByte(dateTime.getSecond())
+                .putInteger(dateTime.getNano())
+                .getData();
     }
 
     //endregion

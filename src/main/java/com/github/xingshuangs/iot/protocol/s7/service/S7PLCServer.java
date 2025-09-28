@@ -204,8 +204,8 @@ public class S7PLCServer extends TcpServerBasic {
                 byte[] bytes = this.dataMap.get(area);
                 ByteReadBuff buff = new ByteReadBuff(bytes);
                 byte[] data;
-                if (p.getVariableType() == EParamVariableType.BYTE) {
-                    data = buff.getBytes(p.getByteAddress(), p.getCount());
+                if (p.getVariableType() != EParamVariableType.BIT) {
+                    data = buff.getBytes(p.getByteAddress(), p.getByteCount());
                 } else {
                     byte oldData = buff.getByte(p.getByteAddress());
                     data = BooleanUtil.getValue(oldData, p.getBitAddress()) ? new byte[]{(byte) 0x01} : new byte[]{(byte) 0x00};
@@ -213,7 +213,7 @@ public class S7PLCServer extends TcpServerBasic {
                 // 客户端[{}]读取[{}]数据，区域[{}]，字节索引[{}]，位索引[{}]，长度[{}]，区域地址数据{}
                 log.debug("Client[{}] read [{}] data, area[{}], byte index[{}], bit index[{}], length[{}], address data{}",
                         socket.getRemoteSocketAddress(), p.getVariableType(), area, p.getByteAddress(), p.getBitAddress(), p.getCount(), data);
-                DataItem dataItem = DataItem.createAckBy(data, p.getVariableType() == EParamVariableType.BYTE ? EDataVariableType.BYTE_WORD_DWORD : EDataVariableType.BIT);
+                DataItem dataItem = DataItem.createAckBy(data, p.getVariableType() == EParamVariableType.BIT ? EDataVariableType.BIT : EDataVariableType.BYTE_WORD_DWORD);
                 returnItems.add(dataItem);
             });
         } finally {

@@ -257,4 +257,16 @@ public class S7PLCServerTest {
         write.addUInt16("DB1.12", 1);
         s7PLC.writeMultiData(write);
     }
+
+    @Test
+    public void readCounter() {
+        int i = this.s7PLC.readCounter("C1.0");
+        System.out.println(i);
+    }
+
+    @Test
+    public void readTimer() {
+        int i = this.s7PLC.readTimer("T1.0");
+        System.out.println(i);
+    }
 }

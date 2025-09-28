@@ -98,8 +98,14 @@ public class RequestItem extends RequestBaseItem {
      */
     private int bitAddress = 0;
 
+    /**
+     * Gets byte count.
+     * 获取字节数
+     *
+     * @return byte count 字节数
+     */
     public int getByteCount() {
-        int multiplier = EParamVariableType.TIMER.equals(this.variableType) || EParamVariableType.COUNTER.equals(this.variableType) ? 2 : 1;
+        int multiplier = EParamVariableType.TIMER == this.variableType || EParamVariableType.COUNTER == this.variableType ? 2 : 1;
         return count * multiplier;
     }
 

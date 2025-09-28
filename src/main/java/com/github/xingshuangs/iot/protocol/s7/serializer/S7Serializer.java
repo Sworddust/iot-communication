@@ -320,23 +320,15 @@ public class S7Serializer implements IPLCSerializable {
                 item.getField().set(result, buff.getString(1, Math.min(length, item.getCount()), this.charsets));
                 break;
             case DATE:
-                LocalDate date = LocalDate.of(1990, 1, 1).plusDays(buff.getUInt16());
+                LocalDate date = this.s7PLC.byteArrayToDate(buff.getBytes(2));
                 item.getField().set(result, date);
                 break;
             case TIME_OF_DAY:
-                LocalTime time = LocalTime.ofSecondOfDay(buff.getUInt32() / 1000);
+                LocalTime time = this.s7PLC.byteArrayToTimeOfDay(buff.getBytes(4));
                 item.getField().set(result, time);
                 break;
             case DTL:
-                int year = buff.getUInt16();
-                int month = buff.getByteToInt();
-                int dayOfMonth = buff.getByteToInt();
-                int week = buff.getByteToInt();
-                int hour = buff.getByteToInt();
-                int minute = buff.getByteToInt();
-                int second = buff.getByteToInt();
-                long nanoOfSecond = buff.getUInt32();
-                LocalDateTime dateTime = LocalDateTime.of(year, month, dayOfMonth, hour, minute, second, (int) nanoOfSecond);
+                LocalDateTime dateTime = this.s7PLC.byteArrayToDTL(buff.getBytes(12));
                 item.getField().set(result, dateTime);
                 break;
             default:
@@ -497,29 +489,15 @@ public class S7Serializer implements IPLCSerializable {
                 item.getRequestItem().setCount(targetBytes.length);
                 break;
             case DATE:
-                // TODO: 后面时间采用工具类
-                LocalDate start = LocalDate.of(1990, 1, 1);
-                long date = ((LocalDate) data).toEpochDay() - start.toEpochDay();
-                item.setDataItem(DataItem.createReqByByte(ByteWriteBuff.newInstance(2)
-                        .putShort((short) date).getData()));
+                byte[] dateBytes = this.s7PLC.dateToByteArray((LocalDate) data);
+                item.setDataItem(DataItem.createReqByByte(dateBytes));
                 break;
             case TIME_OF_DAY:
-                long timeOfDay = ((LocalTime) data).toSecondOfDay() * 1000L;
-                item.setDataItem(DataItem.createReqByByte(ByteWriteBuff.newInstance(4)
-                        .putInteger(timeOfDay).getData()));
+                byte[] timeBytes = this.s7PLC.timeOfDayToByteArray((LocalTime) data);
+                item.setDataItem(DataItem.createReqByByte(timeBytes));
                 break;
             case DTL:
-                LocalDateTime dateTime = (LocalDateTime) data;
-                byte[] dateTimeData = ByteWriteBuff.newInstance(12)
-                        .putShort(dateTime.getYear())
-                        .putByte(dateTime.getMonthValue())
-                        .putByte(dateTime.getDayOfMonth())
-                        .putByte(dateTime.getDayOfWeek().getValue())
-                        .putByte(dateTime.getHour())
-                        .putByte(dateTime.getMinute())
-                        .putByte(dateTime.getSecond())
-                        .putInteger(dateTime.getNano())
-                        .getData();
+                byte[] dateTimeData = this.s7PLC.dtlToByteArray((LocalDateTime) data);
                 item.setDataItem(DataItem.createReqByByte(dateTimeData));
                 break;
             default:

@@ -32,9 +32,6 @@ import com.github.xingshuangs.iot.protocol.melsec.enums.EMcSeries;
 import com.github.xingshuangs.iot.utils.IntegerUtil;
 import lombok.Data;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 /**
  * Device address
  * (软元件设备地址)
@@ -157,8 +154,48 @@ public class McDeviceAddress {
         return createBy(address, 1);
     }
 
+//    /**
+//     * Create McDeviceAddress
+//     *
+//     * @param address address string
+//     * @param count   count
+//     * @return McDeviceAddress object
+//     */
+//    public static McDeviceAddress createBy(String address, int count) {
+//        if (address == null || address.length() == 0) {
+//            throw new IllegalArgumentException("address is null or empty");
+//        }
+//        if (count <= 0) {
+//            throw new IllegalArgumentException("count <= 0");
+//        }
+//        // 转换为大写
+//        address = address.toUpperCase();
+//        Matcher matcher = Pattern.compile("\\d").matcher(address);
+//        if (!matcher.find()) {
+//            // 地址有问题
+//            throw new McCommException("address error");
+//        }
+//
+//        // 提取字符数据
+////        String letter = Pattern.compile("\\d").matcher(address).replaceAll("").trim().toUpperCase();
+//        String letter = address.substring(0, matcher.start()).trim();
+//        EMcDeviceCode deviceCode = EMcDeviceCode.from(letter);
+//        if (deviceCode == null) {
+//            throw new McCommException("device code is not exist");
+//        }
+//        // 提取数字数据
+////        String number = Pattern.compile("\\D").matcher(address).replaceAll("").trim();
+//        String number = address.substring(matcher.start()).trim();
+//        if ("".equals(number)) {
+//            throw new McCommException("address of device is error");
+//        }
+//        int headDeviceNumber = Integer.parseInt(number, deviceCode.getNotation());
+//        return new McDeviceAddress(deviceCode, headDeviceNumber, count);
+//    }
+
     /**
      * Create McDeviceAddress
+     * 兼容XFF，X0F，D100，YFF等表示法
      *
      * @param address address string
      * @param count   count
@@ -173,22 +210,13 @@ public class McDeviceAddress {
         }
         // 转换为大写
         address = address.toUpperCase();
-        Matcher matcher = Pattern.compile("\\d").matcher(address);
-        if (!matcher.find()) {
-            // 地址有问题
-            throw new McCommException("address error");
-        }
-
-        // 提取字符数据
-//        String letter = Pattern.compile("\\d").matcher(address).replaceAll("").trim().toUpperCase();
-        String letter = address.substring(0, matcher.start()).trim();
-        EMcDeviceCode deviceCode = EMcDeviceCode.from(letter);
+        EMcDeviceCode deviceCode = EMcDeviceCode.identifyDeviceCodeByStart(address);
         if (deviceCode == null) {
             throw new McCommException("device code is not exist");
         }
         // 提取数字数据
-//        String number = Pattern.compile("\\D").matcher(address).replaceAll("").trim();
-        String number = address.substring(matcher.start()).trim();
+        int startIndex = deviceCode.getSymbol().length();
+        String number = address.substring(startIndex).trim();
         if ("".equals(number)) {
             throw new McCommException("address of device is error");
         }

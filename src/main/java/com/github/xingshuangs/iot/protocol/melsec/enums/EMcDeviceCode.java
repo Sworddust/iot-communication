@@ -27,7 +27,9 @@ package com.github.xingshuangs.iot.protocol.melsec.enums;
 
 import com.github.xingshuangs.iot.common.constant.GeneralConst;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -41,13 +43,13 @@ public enum EMcDeviceCode {
      * Special relay
      * 特殊继电器
      */
-    SM("SM", GeneralConst.TYPE_BIT, 10, "SM", (byte) 0x9, "SM**", 0x0091),
+    SM("SM", GeneralConst.TYPE_BIT, 10, "SM", (byte) 0x91, "SM**", 0x0091),
 
     /**
      * Special register
      * 特殊寄存器
      */
-    SD("SD", GeneralConst.TYPE_WORD, 10, "SD", (byte) 0xA, "SD**", 0x00A9),
+    SD("SD", GeneralConst.TYPE_WORD, 10, "SD", (byte) 0xA9, "SD**", 0x00A9),
 
     /**
      * Input
@@ -269,6 +271,8 @@ public enum EMcDeviceCode {
     // 静态内部类（static 内部类）实现懒加载
     private static class Holder {
         private static final Map<String, EMcDeviceCode> INSTANCE = createMap();
+        // 提取简称头，并按长度降序排列
+        private static final List<String> INSTANCE_SYMBOL = create16NotionList();
 
         private static Map<String, EMcDeviceCode> createMap() {
             Map<String, EMcDeviceCode> map = new HashMap<>();
@@ -276,6 +280,14 @@ public enum EMcDeviceCode {
                 map.put(item.symbol, item);
             }
             return map;
+        }
+        private static List<String> create16NotionList(){
+            List<String> list = new ArrayList<>();
+            for (EMcDeviceCode item : EMcDeviceCode.values()) {
+                    list.add(item.symbol);
+            }
+            list.sort((a, b) -> Integer.compare(b.length(), a.length()));
+            return list;
         }
     }
 
@@ -489,5 +501,21 @@ public enum EMcDeviceCode {
             default:
                 return false;
         }
+    }
+
+    /**
+     * Identify the device code from the starting string of the address
+     * 从地址的起始字符串中识别软元件
+     *
+     * @param address 地址
+     * @return 软元件代码
+     */
+    public static EMcDeviceCode identifyDeviceCodeByStart(String address){
+        for (String symbol : Holder.INSTANCE_SYMBOL) {
+            if (address.startsWith(symbol)) {
+                return EMcDeviceCode.from(symbol);
+            }
+        }
+        return null;
     }
 }

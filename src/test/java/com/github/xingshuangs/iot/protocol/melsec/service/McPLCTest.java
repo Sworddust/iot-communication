@@ -395,4 +395,284 @@ public class McPLCTest {
         assertEquals(22.55f, float32List.get(2), 0.001);
 
     }
+
+    @Test
+    public void readSM() {
+        this.mcPLC.writeBoolean("SM21", true);
+        boolean actual = this.mcPLC.readBoolean("SM21");
+        Assert.assertTrue(actual);
+
+        this.mcPLC.writeBoolean("SM21", false);
+        actual = this.mcPLC.readBoolean("SM21");
+        Assert.assertFalse(actual);
+    }
+
+    @Test
+    public void readSD() {
+        this.mcPLC.writeUInt16("SD13", 12345);
+        int actual = this.mcPLC.readUInt16("SD13");
+        Assert.assertEquals(12345, actual);
+
+        this.mcPLC.writeUInt16("SD13", 0);
+        actual = this.mcPLC.readUInt16("SD13");
+        Assert.assertEquals(0, actual);
+    }
+
+    @Test
+    public void readX() {
+        this.mcPLC.writeBoolean("XFF", true);
+        boolean x10 = this.mcPLC.readBoolean("XFF");
+        Assert.assertTrue(x10);
+
+        this.mcPLC.writeBoolean("XFF", false);
+        x10 = this.mcPLC.readBoolean("XFF");
+        Assert.assertFalse(x10);
+    }
+
+    @Test
+    public void readY() {
+        this.mcPLC.writeBoolean("YFF", true);
+        boolean actual = this.mcPLC.readBoolean("YFF");
+        Assert.assertTrue(actual);
+
+        this.mcPLC.writeBoolean("YFF", false);
+        actual = this.mcPLC.readBoolean("YFF");
+        Assert.assertFalse(actual);
+    }
+
+    @Test
+    public void readM() {
+        this.mcPLC.writeBoolean("M22", true);
+        boolean actual = this.mcPLC.readBoolean("M22");
+        Assert.assertTrue(actual);
+
+        this.mcPLC.writeBoolean("M22", false);
+        actual = this.mcPLC.readBoolean("M22");
+        Assert.assertFalse(actual);
+    }
+
+    @Test
+    public void readL() {
+        this.mcPLC.writeBoolean("L22", true);
+        boolean actual = this.mcPLC.readBoolean("L22");
+        Assert.assertTrue(actual);
+
+        this.mcPLC.writeBoolean("L22", false);
+        actual = this.mcPLC.readBoolean("L22");
+        Assert.assertFalse(actual);
+    }
+
+    @Test
+    public void readF() {
+        this.mcPLC.writeBoolean("F22", true);
+        boolean actual = this.mcPLC.readBoolean("F22");
+        Assert.assertTrue(actual);
+
+        this.mcPLC.writeBoolean("F22", false);
+        actual = this.mcPLC.readBoolean("F22");
+        Assert.assertFalse(actual);
+    }
+
+    @Test
+    public void readV() {
+        // 测试FX5U PLC没有
+    }
+
+    @Test
+    public void readB() {
+        this.mcPLC.writeBoolean("B2F", true);
+        boolean actual = this.mcPLC.readBoolean("B2F");
+        Assert.assertTrue(actual);
+
+        this.mcPLC.writeBoolean("B2F", false);
+        actual = this.mcPLC.readBoolean("B2F");
+        Assert.assertFalse(actual);
+    }
+
+    @Test
+    public void readD() {
+        this.mcPLC.writeUInt16("D13", 12345);
+        int actual = this.mcPLC.readUInt16("D13");
+        Assert.assertEquals(12345, actual);
+
+        this.mcPLC.writeUInt16("D13", 0);
+        actual = this.mcPLC.readUInt16("D13");
+        Assert.assertEquals(0, actual);
+    }
+
+    @Test
+    public void readW() {
+        this.mcPLC.writeUInt16("W2F", 12345);
+        int actual = this.mcPLC.readUInt16("W2F");
+        Assert.assertEquals(12345, actual);
+
+        this.mcPLC.writeUInt16("W2F", 0);
+        actual = this.mcPLC.readUInt16("W2F");
+        Assert.assertEquals(0, actual);
+    }
+
+    @Test
+    public void readT() {
+        this.mcPLC.writeBoolean("TS3", true);
+        boolean actual = this.mcPLC.readBoolean("TS3");
+        Assert.assertTrue(actual);
+
+        this.mcPLC.writeBoolean("TC3", true);
+        actual = this.mcPLC.readBoolean("TC3");
+        Assert.assertTrue(actual);
+
+        this.mcPLC.writeUInt16("TN3", 15);
+        int actualInt = this.mcPLC.readUInt16("TN3");
+        Assert.assertEquals(15, actualInt);
+
+        this.mcPLC.writeBoolean("TS3", false);
+        actual = this.mcPLC.readBoolean("TS3");
+        Assert.assertFalse(actual);
+
+        this.mcPLC.writeBoolean("TC3", false);
+        actual = this.mcPLC.readBoolean("TC3");
+        Assert.assertFalse(actual);
+
+        this.mcPLC.writeUInt16("TN3", 0);
+        actualInt = this.mcPLC.readUInt16("TN3");
+        Assert.assertEquals(0, actualInt);
+    }
+
+    @Test
+    public void readLT() {
+        // 测试FX5U PLC没有
+    }
+
+    @Test
+    public void readST() {
+        this.mcPLC.writeBoolean("STS3", true);
+        boolean actual = this.mcPLC.readBoolean("STS3");
+        Assert.assertTrue(actual);
+
+        this.mcPLC.writeBoolean("STC3", true);
+        actual = this.mcPLC.readBoolean("STC3");
+        Assert.assertTrue(actual);
+
+        this.mcPLC.writeUInt16("STN3", 15);
+        int actualInt = this.mcPLC.readUInt16("STN3");
+        Assert.assertEquals(15, actualInt);
+
+        this.mcPLC.writeBoolean("STS3", false);
+        actual = this.mcPLC.readBoolean("STS3");
+        Assert.assertFalse(actual);
+
+        this.mcPLC.writeBoolean("STC3", false);
+        actual = this.mcPLC.readBoolean("STC3");
+        Assert.assertFalse(actual);
+
+        this.mcPLC.writeUInt16("STN3", 0);
+        actualInt = this.mcPLC.readUInt16("STN3");
+        Assert.assertEquals(0, actualInt);
+    }
+
+    @Test
+    public void readLST() {
+       // 测试FX5U PLC没有
+    }
+
+    @Test
+    public void readC() {
+        this.mcPLC.writeBoolean("CS3", true);
+        boolean actual = this.mcPLC.readBoolean("CS3");
+        Assert.assertTrue(actual);
+
+        this.mcPLC.writeBoolean("CC3", true);
+        actual = this.mcPLC.readBoolean("CC3");
+        Assert.assertTrue(actual);
+
+        this.mcPLC.writeUInt16("CN3", 15);
+        int actualInt = this.mcPLC.readUInt16("CN3");
+        Assert.assertEquals(15, actualInt);
+
+        this.mcPLC.writeBoolean("CS3", false);
+        actual = this.mcPLC.readBoolean("CS3");
+        Assert.assertFalse(actual);
+
+        this.mcPLC.writeBoolean("CC3", false);
+        actual = this.mcPLC.readBoolean("CC3");
+        Assert.assertFalse(actual);
+
+        this.mcPLC.writeUInt16("CN3", 0);
+        actualInt = this.mcPLC.readUInt16("CN3");
+        Assert.assertEquals(0, actualInt);
+    }
+
+    @Test
+    public void readLC() {
+        // 测试FX5U PLC有，但是地址访问不了
+    }
+
+    @Test
+    public void readSB() {
+        this.mcPLC.writeBoolean("SB3F", true);
+        boolean actual = this.mcPLC.readBoolean("SB3F");
+        Assert.assertTrue(actual);
+
+        this.mcPLC.writeBoolean("SB3F", false);
+        actual = this.mcPLC.readBoolean("SB3F");
+        Assert.assertFalse(actual);
+    }
+
+    @Test
+    public void readSW() {
+        this.mcPLC.writeUInt16("SW2F", 12345);
+        int actual = this.mcPLC.readUInt16("SW2F");
+        Assert.assertEquals(12345, actual);
+
+        this.mcPLC.writeUInt16("SW2F", 0);
+        actual = this.mcPLC.readUInt16("SW2F");
+        Assert.assertEquals(0, actual);
+    }
+
+    @Test
+    public void readDX() {
+        // 测试FX5U PLC有，但是地址访问不了
+    }
+
+    @Test
+    public void readDY() {
+        // 测试FX5U PLC有，但是地址访问不了
+    }
+
+    @Test
+    public void readZ() {
+        this.mcPLC.writeUInt16("Z10", 12345);
+        int actual = this.mcPLC.readUInt16("Z10");
+        Assert.assertEquals(12345, actual);
+
+        this.mcPLC.writeUInt16("Z10", 0);
+        actual = this.mcPLC.readUInt16("Z10");
+        Assert.assertEquals(0, actual);
+    }
+
+    @Test
+    public void readLZ() {
+        // 测试FX5U PLC没有
+    }
+
+    @Test
+    public void readR() {
+        this.mcPLC.writeUInt16("R10", 12345);
+        int actual = this.mcPLC.readUInt16("R10");
+        Assert.assertEquals(12345, actual);
+
+        this.mcPLC.writeUInt16("R10", 0);
+        actual = this.mcPLC.readUInt16("R10");
+        Assert.assertEquals(0, actual);
+    }
+
+    @Test
+    public void readZR() {
+        // 测试FX5U PLC没有
+    }
+
+    @Test
+    public void readRD() {
+        // 测试FX5U PLC没有
+    }
 }

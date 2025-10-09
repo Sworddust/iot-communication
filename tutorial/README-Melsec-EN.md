@@ -476,5 +476,5 @@ class Demo {
   Online Change to "Enable All(SLMP)" -> Click on Apply -> Go to Online menu -> Click on Write to PLC -> Power off and
   then restart
   the R series PLC.
-- ZR uses hexadecimal as the addresses. For example:- mcPlc.writeInt16("ZR100", 4852) -> the value will be written to "
+- ZR uses hexadecimal as the addresses. For example: mcPlc.writeInt16("ZR100", 4852) -> the value will be written to "
   ZR256" (256 is decimal)

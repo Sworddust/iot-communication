@@ -133,6 +133,11 @@ public class RequestNckItem extends RequestBaseItem {
                 .getData();
     }
 
+    @Override
+    public String address() {
+        return String.format("%s%d.%d.%d.%s", this.area.getAbbr(), this.unit, this.columnNumber, this.lineNumber, this.module.name());
+    }
+
     /**
      * Copy.
      * 复制一个新对象

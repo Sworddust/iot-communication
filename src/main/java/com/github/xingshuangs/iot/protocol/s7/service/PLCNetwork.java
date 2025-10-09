@@ -360,7 +360,7 @@ public class PLCNetwork extends TcpClientBasic {
         for (int i = 0; i < returnItems.size(); i++) {
             if (returnItems.get(i).getReturnCode() != EReturnCode.SUCCESS) {
                 // 返回第[%d]个结果异常，原因：%s
-                throw new S7CommException(String.format("Return [%d] result exception, cause: %s", i + 1, returnItems.get(i).getReturnCode().getDescription()));
+                throw new S7CommException(String.format("Return [%d] result exception, address[%s], cause: %s", i + 1, parameter.getRequestItems().get(i).address(), returnItems.get(i).getReturnCode().getDescription()));
             }
         }
     }

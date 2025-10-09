@@ -71,4 +71,13 @@ public class RequestBaseItem implements IObjectByteArray {
     public byte[] toByteArray() {
         return new byte[0];
     }
+
+    /**
+     * 获取地址字符串
+     *
+     * @return 地址字符串
+     */
+    public String address() {
+        return "";
+    }
 }

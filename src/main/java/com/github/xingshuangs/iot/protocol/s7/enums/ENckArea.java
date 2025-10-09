@@ -39,42 +39,42 @@ public enum ENckArea {
     /**
      * NCK
      */
-    N_NCK((byte) 0x00),
+    N_NCK((byte) 0x00, "N"),
 
     /**
      * mode group
      */
-    B_MODE_GROUP((byte) 0x01),
+    B_MODE_GROUP((byte) 0x01, "B"),
 
     /**
      * channel
      */
-    C_CHANNEL((byte) 0x02),
+    C_CHANNEL((byte) 0x02, "C"),
 
     /**
      * axis
      */
-    A_AXIS((byte) 0x03),
+    A_AXIS((byte) 0x03, "A"),
 
     /**
      * tool
      */
-    T_TOOL((byte) 0x04),
+    T_TOOL((byte) 0x04, "T"),
 
     /**
      * feed drive
      */
-    V_FEED_DRIVE((byte) 0x05),
+    V_FEED_DRIVE((byte) 0x05, "V"),
 
     /**
      * main drive
      */
-    M_MAIN_DRIVE((byte) 0x06),
+    M_MAIN_DRIVE((byte) 0x06, "M"),
 
     /**
      * mmc
      */
-    M_MMC((byte) 0x07),
+    M_MMC((byte) 0x07, "MMC"),
 
     ;
 
@@ -97,11 +97,18 @@ public enum ENckArea {
 
     private final byte code;
 
-    ENckArea(byte code) {
+    private final String abbr;
+
+    ENckArea(byte code, String abbr) {
         this.code = code;
+        this.abbr = abbr;
     }
 
     public byte getCode() {
         return code;
+    }
+
+    public String getAbbr() {
+        return abbr;
     }
 }

@@ -129,6 +129,17 @@ public class RequestItem extends RequestBaseItem {
                 .getData();
     }
 
+    @Override
+    public String address() {
+        String areaStr;
+        if (this.area == EArea.DATA_BLOCKS) {
+            areaStr = String.format("%s%d.%d", this.area.getAbbr(), this.dbNumber, this.byteAddress);
+        } else {
+            areaStr = String.format("%s%d", this.area.getAbbr(), this.byteAddress);
+        }
+        return String.format("%s.%d", areaStr, this.bitAddress);
+    }
+
     /**
      * Copy.
      * 复制一个新对象

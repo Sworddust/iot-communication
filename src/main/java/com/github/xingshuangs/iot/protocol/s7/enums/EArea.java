@@ -39,82 +39,82 @@ public enum EArea {
     /**
      * 200系列系统信息
      */
-    SYSTEM_INFO_OF_200_FAMILY((byte) 0x03),
+    SYSTEM_INFO_OF_200_FAMILY((byte) 0x03, ""),
 
     /**
      * family	200系列系统标志 （SM）
      */
-    SYSTEM_FLAGS_OF_200_FAMILY((byte) 0x05),
+    SYSTEM_FLAGS_OF_200_FAMILY((byte) 0x05, "SM"),
 
     /**
      * 200系列模拟量输入 (AI)
      */
-    ANALOG_INPUTS_OF_200_FAMILY((byte) 0x06),
+    ANALOG_INPUTS_OF_200_FAMILY((byte) 0x06, "AI"),
 
     /**
      * 200系统模式量输出 (AQ)
      */
-    ANALOG_OUTPUTS_OF_200_FAMILY((byte) 0x07),
+    ANALOG_OUTPUTS_OF_200_FAMILY((byte) 0x07, "AQ"),
 
     /**
      * 直接访问外设 (PI,PQ)
      */
-    DIRECT_PERIPHERAL_ACCESS((byte) 0x80),
+    DIRECT_PERIPHERAL_ACCESS((byte) 0x80, "PI/PQ"),
 
     /**
      * 输入（I）
      */
-    INPUTS((byte) 0x81),
+    INPUTS((byte) 0x81, "I"),
 
     /**
      * 输出（Q）
      */
-    OUTPUTS((byte) 0x82),
+    OUTPUTS((byte) 0x82, "Q"),
 
     /**
      * 内部标志（M）
      */
-    FLAGS((byte) 0x83),
+    FLAGS((byte) 0x83, "M"),
 
     /**
      * 数据块（DB）
      */
-    DATA_BLOCKS((byte) 0x84),
+    DATA_BLOCKS((byte) 0x84, "DB"),
 
     /**
      * 背景数据块（DI）
      */
-    INSTANCE_DATA_BLOCKS((byte) 0x85),
+    INSTANCE_DATA_BLOCKS((byte) 0x85, "DI"),
 
     /**
      * 局部变量（L)
      */
-    LOCAL_DATA((byte) 0x86),
+    LOCAL_DATA((byte) 0x86, "L"),
 
     /**
      * 全局变量（V）
      */
-    UNKNOWN_YET((byte) 0x87),
+    UNKNOWN_YET((byte) 0x87, "V"),
 
     /**
      * S7计数器（C）
      */
-    S7_COUNTERS((byte) 0x1C),
+    S7_COUNTERS((byte) 0x1C, "C"),
 
     /**
      * S7定时器（T）
      */
-    S7_TIMERS((byte) 0x1D),
+    S7_TIMERS((byte) 0x1D, "T"),
 
     /**
      * IEC计数器（200系列）
      */
-    IEC_COUNTERS((byte) 0x1E),
+    IEC_COUNTERS((byte) 0x1E, ""),
 
     /**
      * IEC定时器（200系列）
      */
-    IEC_TIMERS((byte) 0x1F),
+    IEC_TIMERS((byte) 0x1F, ""),
 
     ;
 
@@ -137,11 +137,18 @@ public enum EArea {
 
     private final byte code;
 
-    EArea(byte code) {
+    private final String abbr;
+
+    EArea(byte code, String abbr) {
         this.code = code;
+        this.abbr = abbr;
     }
 
     public byte getCode() {
         return code;
+    }
+
+    public String getAbbr() {
+        return abbr;
     }
 }

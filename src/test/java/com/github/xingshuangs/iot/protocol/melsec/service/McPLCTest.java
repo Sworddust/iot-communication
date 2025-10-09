@@ -47,7 +47,7 @@ import static org.junit.Assert.*;
 public class McPLCTest {
 
 //    private final McPLC mcPLC = new McPLC(EMcSeries.Q_L, "192.168.3.100", 6001);
-    private final McPLC mcPLC = new McPLC(EMcSeries.Q_L, LOCALHOST, 6000);
+    private final McPLC mcPLC = new McPLC(EMcSeries.IQ_R, LOCALHOST, 6000);
 
     @Before
     public void before() {

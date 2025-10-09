@@ -12,41 +12,70 @@
   ，little-endian mode = **AB_CD**)
 - Only read and write in binary is supported. Read and write in ASCII is not supported
 - Support TCP mode, serial ports are not supported
-- Support PLC: iQ-R series, Q/L series, QnA series, A series, the L Series(L02CPU) and FX Series(FX5U-32M) has been
+- Support PLC: iQ-R series, Q/L series, QnA series, A series, the L Series(L02), FX Series(FX5U-32M), R Series(R08) has been
   tested
-- For Mitsubishi R series PLC, open GXworks3 (Mitsubishi Software for making changes to its PLC). Go to Module Parameter -> make Enable/Disable
-  Online Change to "Enable All(SLMP)" -> Click on Apply -> Go to Online menu -> Click on Write to PLC -> Power off and then restart
-  the R series PLC.
-- ZR uses hexadecimal as the addresses. For example:- mcPlc.writeInt16("ZR100", 4852) -> the value will be written to "ZR256" (256 is decimal)    
 - Support automatic reconnection.
 
 > PLC series
 
-| Series | Frame Type | Connect  | Model |
-|:------:|:----------:|----------|:-----:|
-|   A    |     1E     | Ethernet | FX3U  |
-|  QnA   |     3E     | Ethernet | FX5U  |
-|  Q/L   |     3E     | Ethernet |  Q/L  |
-|  IQ-R  |     -      | Ethernet |   -   |
-|  IQ-L  |     -      | Ethernet |   -   |
+| Series | Series Parameter | Frame Type | Connect  | Model |
+|:------:|------------------|:----------:|----------|:-----:|
+|  FX3   | A                |     1E     | Ethernet | FX3U  |
+|   L    | QnA/Q_L          |     3E     | Ethernet |   L   |
+|   Q    | QnA/Q_L          |   3E/4E    | Ethernet |   Q   |
+|  iQ-F  | Q_L              |     3E     | Ethernet | FX5U  |
+|  iQ-L  | iQ-R             |     3E     | Ethernet |   -   |
+|  iQ-R  | iQ-R             |   3E/4E    | Ethernet |   R   |
 
 > Address format, case compatible.
 
-| Abbr  | Device Name           | Symbol | Address | Type | Notation |
-|:-----:|:----------------------|:------:|:-------:|:----:|:---------|
-| SM10  | Special relay         |   SM   |   10    | BIT  | 10       |
-| SD12  | Special register      |   SD   |   12    | WORD | 10       |
-|  X2F  | Input                 |   X    |  0x2F   | BIT  | **16**   |
-| Y12F  | Output                |   Y    |  0x12F  | BIT  | **16**   |
-| M100  | Internal relay        |   M    |   100   | BIT  | 10       |
-|  L10  | Latch relay           |   L    |   10    | BIT  | 10       |
-|  F10  | Annunciator           |   F    |   10    | BIT  | 10       |
-|  V9   | Edge relay            |   V    |    9    | BIT  | 10       |
-|  B2F  | Link relay            |   B    |  0x2F   | BIT  | **16**   |
-| D100  | Data register         |   D    |   100   | WORD | 10       |
-|  W1F  | Link register         |   W    |  0x1F   | WORD | **16**   |
-| TN100 | Timer Current value   |   TN   |   100   | WORD | 10       |
-| CN100 | Counter Current value |   CN   |   100   | WORD | 10       |
+1.The addresses of the devices in this table are represented in decimal.
+
+|  Abbr  | Device Name                        | Symbol | Address |   Type    | Notation | FX5U |
+|:------:|:-----------------------------------|:------:|:-------:|:---------:|:---------|------|
+|  SM10  | Special relay                      |   SM   |   10    |    BIT    | 10       | ✅    |
+|  SD12  | Special register                   |   SD   |   12    |   WORD    | 10       | ✅    |
+|  M100  | Internal relay                     |   M    |   100   |    BIT    | 10       | ✅    |
+|  L10   | Latch relay                        |   L    |   10    |    BIT    | 10       | ✅    |
+|  F10   | Annunciator                        |   F    |   10    |    BIT    | 10       | ✅    |
+|   V9   | Edge relay                         |   V    |    9    |    BIT    | 10       | ❌    |
+|  D100  | Data register                      |   D    |   100   |   WORD    | 10       | ✅    |
+|  TS10  | Timer Contact                      |   TS   |   10    |    BIT    | 10       | ✅    |
+|  TC10  | Timer Coil                         |   TC   |   10    |    BIT    | 10       | ✅    |
+|  TN10  | Timer Current value                |   TN   |   10    |   WORD    | 10       | ✅    |
+| LTS10  | Long timer Contact                 |  LTS   |   10    |    BIT    | 10       | ❌    |
+| LTC10  | Long timer Coil                    |  LTC   |   10    |    BIT    | 10       | ❌    |
+| LTN10  | Long timer Current value           |  LTN   |   10    | **DWORD** | 10       | ❌    |
+| STS10  | Retentive timer Contact            |  STS   |   10    |    BIT    | 10       | ✅    |
+| STC10  | Retentive timer Coil               |  STC   |   10    |    BIT    | 10       | ✅    |
+| STN10  | Retentive timer Current value      |  STN   |   10    |   WORD    | 10       | ✅    |
+| LSTS10 | Long retentive timer Contact       |  LSTS  |   10    |    BIT    | 10       | ❌    |
+| LSTC10 | Long retentive timer Coil          |  LSTC  |   10    |    BIT    | 10       | ❌    |
+| LSTN10 | Long retentive timer Current value |  LSTN  |   10    | **DWORD** | 10       | ❌    |
+|  CS10  | Counter Contact                    |   CS   |   10    |    BIT    | 10       | ✅    |
+|  CC10  | Counter Coil                       |   CC   |   10    |    BIT    | 10       | ✅    |
+|  CN10  | Counter Current value              |   CN   |   10    |   WORD    | 10       | ✅    |
+| LCS10  | Long counter Contact               |  LCS   |   10    |    BIT    | 10       | ❌    |
+| LCC10  | Long counter Coil                  |  LCC   |   10    |    BIT    | 10       | ❌    |
+| LCN10  | Long counter Current value         |  LCN   |   10    | **DWORD** | 10       | ❌    |
+|  Z10   | Index register                     |   Z    |   10    |   WORD    | 10       | ✅    |
+|  LZ10  | Long index register                |   LZ   |   10    | **DWORD** | 10       | ✅    |
+|  R10   | Block switching method             |   R    |   10    |   WORD    | 10       | ✅    |
+|  RD10  | Refresh data register              |   RD   |   10    |   WORD    | 10       | ❌    |
+
+2.The addresses of the devices in this table are represented in hexadecimal. The address `X1F` corresponds to the `31` bit of the `X` device.
+
+| Abbr  | Device Name                 | Symbol | Address | Type | Notation | FX5U |
+|:-----:|:----------------------------|:------:|:-------:|:----:|:---------|------|
+|  X2F  | Input                       |   X    |  0x2F   | BIT  | **16**   | ✅    |
+| Y12F  | Output                      |   Y    |  0x12F  | BIT  | **16**   | ✅    |
+|  B2F  | Link relay                  |   B    |  0x2F   | BIT  | **16**   | ✅    |
+|  W1F  | Link register               |   W    |  0x1F   | WORD | **16**   | ✅    |
+| SB1F  | Link special relay          |   SB   |  0x1F   | BIT  | **16**   | ✅    |
+| SW1F  | Link special register       |   SW   |  0x1F   | WORD | **16**   | ✅    |
+| DX2F  | Direct access input         |   DX   |  0x2F   | BIT  | **16**   | ❌    |
+| DY12F | Direct access output        |   DY   |  0x12F  | BIT  | **16**   | ❌    |
+| ZR1C  | Serial number access method |   ZR   |  0x1C   | WORD | **16**   | ❌    |
 
 > Shortcut access interface
 
@@ -340,3 +369,112 @@ class Demo {
     }
 }
 ```
+
+## PLC
+
+### 1. FX5U demo
+
+```java
+class Demo {
+    public static void main(String[] args) {
+        McPLC mcPLC = new McPLC(EMcSeries.Q_L, "127.0.0.1", 6000);
+
+        // optional
+        mcPLC.setComCallback((tag, bytes) -> System.out.printf("%s[%d] %s%n", tag, bytes.length, HexUtil.toHexString(bytes)));
+
+        // read and write SM
+        mcPLC.writeBoolean("SM21", true);
+        boolean sm = mcPLC.readBoolean("SM21");
+
+        // read and write SD
+        mcPLC.writeUInt16("SD13", 12345);
+        int sd = mcPLC.readUInt16("SD13");
+
+        // read and write X
+        mcPLC.writeBoolean("XFF", true);
+        boolean x = mcPLC.readBoolean("XFF");
+
+        // read and write Y
+        mcPLC.writeBoolean("YFF", true);
+        boolean y = mcPLC.readBoolean("YFF");
+
+        // read and write M
+        mcPLC.writeBoolean("M22", true);
+        boolean m = mcPLC.readBoolean("M22");
+
+        // read and write L
+        mcPLC.writeBoolean("L22", true);
+        boolean l = mcPLC.readBoolean("L22");
+
+        // read and write F
+        mcPLC.writeBoolean("F22", true);
+        boolean f = mcPLC.readBoolean("F22");
+
+        // read and write B
+        mcPLC.writeBoolean("B2F", true);
+        boolean b = mcPLC.readBoolean("B2F");
+
+        // read and write D
+        mcPLC.writeUInt16("D13", 12345);
+        int d = mcPLC.readUInt16("D13");
+
+        // read and write W
+        mcPLC.writeUInt16("W2F", 12345);
+        int w = mcPLC.readUInt16("W2F");
+
+        // read and write T
+        mcPLC.writeBoolean("TS3", true);
+        boolean ts = mcPLC.readBoolean("TS3");
+        mcPLC.writeBoolean("TC3", true);
+        boolean tc = mcPLC.readBoolean("TC3");
+        mcPLC.writeUInt16("TN3", 15);
+        int tn = mcPLC.readUInt16("TN3");
+
+        // read and write ST
+        mcPLC.writeBoolean("STS3", true);
+        boolean sts = mcPLC.readBoolean("STS3");
+        mcPLC.writeBoolean("STC3", true);
+        boolean stc = mcPLC.readBoolean("STC3");
+        mcPLC.writeUInt16("STN3", 15);
+        int stn = mcPLC.readUInt16("STN3");
+
+        // read and write C
+        mcPLC.writeBoolean("CS3", true);
+        boolean cs = mcPLC.readBoolean("CS3");
+        mcPLC.writeBoolean("CC3", true);
+        boolean cc = mcPLC.readBoolean("CC3");
+        mcPLC.writeUInt16("CN3", 15);
+        int cn = mcPLC.readUInt16("CN3");
+
+        // read and write SB
+        mcPLC.writeBoolean("SB3F", true);
+        boolean sb = mcPLC.readBoolean("SB3F");
+
+        // read and write SW
+        mcPLC.writeUInt16("SW2F", 12345);
+        int sw = mcPLC.readUInt16("SW2F");
+
+        // read and write Z
+        mcPLC.writeUInt16("Z10", 12345);
+        int z = mcPLC.readUInt16("Z10");
+
+        // read and write R
+        mcPLC.writeUInt16("R10", 12345);
+        int r = mcPLC.readUInt16("R10");
+
+        mcPLC.close();
+    }
+}
+```
+
+## Q&A
+
+> Settings of accessing ZR device in the R series PLC
+
+- For Mitsubishi R series PLC, open GXworks3 (Mitsubishi Software for making changes to its PLC). Go to Module Parameter
+  -> make Enable/Disable
+  Online Change to "Enable All(SLMP)" -> Click on Apply -> Go to Online menu -> Click on Write to PLC -> Power off and
+  then restart
+  the R series PLC.
+- ZR uses hexadecimal as the addresses. For example:- mcPlc.writeInt16("ZR100", 4852) -> the value will be written to "
+  ZR256" (256 is decimal)

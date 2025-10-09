@@ -219,6 +219,18 @@ public class S7PLCTest {
     }
 
     @Test
+    public void readCounter() {
+        int i = this.s7PLC.readCounter("C2.0");
+        System.out.println(i);
+    }
+
+    @Test
+    public void readTimer() {
+        int i = this.s7PLC.readTimer("T2.0");
+        System.out.println(i);
+    }
+
+    @Test
     public void writeMultiData() {
         MultiAddressWrite addressWrite = new MultiAddressWrite();
         addressWrite.addUInt16("DB2.0", (byte) 0x11)

@@ -1,4 +1,4 @@
-# 三菱MELSEC(MC)通信协议教程
+# 三菱MELSEC(MC)/SLMP通信协议教程
 
 [返回主页](../README-CN.md)
 
@@ -11,36 +11,69 @@
 - 采用小端模式，**4 字节**数据的编码格式 = **AB_CD**； (大端模式 = **DC_BA**，小端模式 = **AB_CD**)
 - 只支持二进制方式读写，不支持ASCII方式读写
 - 采用TCP的方式，不支持串口
-- 支持三菱PLC: iQ-R系列, Q/L系列, QnA系列, A系列, 目前测试了L系列（L02CPU），FX系列（FX5U-32M）
+- 支持三菱PLC: iQ-R系列, Q/L系列, QnA系列, A系列, 目前测试了L系列（L02），FX系列（FX5U-32M），R系列（R08）
 - 支持自动重连
 
 > PLC系列
 
-|  系列  | 帧类型 | 连接  |  型号  |
-|:----:|:---:|-----|:----:|
-|  A   | 1E  | 以太网 | FX3U |
-| QnA  | 3E  | 以太网 | FX5U |
-| Q/L  | 3E  | 以太网 | Q/L  |
-| IQ-R |  -  | 以太网 |  -   |
-| IQ-L |  -  | 以太网 |  -   |
+|  系列  | 参数系列    |  帧类型  | 连接  |  型号  |
+|:----:|---------|:-----:|-----|:----:|
+| FX3  | A       |  1E   | 以太网 | FX3U |
+|  L   | QnA/Q_L |  3E   | 以太网 |  L   |
+|  Q   | QnA/Q_L | 3E/4E | 以太网 |  Q   |
+| iQ-F | Q_L     |  3E   | 以太网 | FX5U |
+| iQ-L | iQ-R    |  3E   | 以太网 |  -   |
+| iQ-R | iQ-R    | 3E/4E | 以太网 |  R   |
 
 > 地址格式，兼容大小写
 
-|  简写   | 软元件名   | 符号  |  地址   |  类型  | 地址的进制    |
-|:-----:|:-------|:---:|:-----:|:----:|:---------|
-| SM10  | 特殊继电器  | SM  |  10   | BIT  | 10进制     |
-| SD12  | 特殊寄存器  | SD  |  12   | WORD | 10进制     |
-|  X2F  | 输入     |  X  | 0x2F  | BIT  | **16进制** |
-| Y12F  | 输出     |  Y  | 0x12F | BIT  | **16进制** |
-| M100  | 内部继电器  |  M  |  100  | BIT  | 10进制     |
-|  L10  | 锁存继电器  |  L  |  10   | BIT  | 10进制     |
-|  F10  | 报警器    |  F  |  10   | BIT  | 10进制     |
-|  V9   | 变址继电器  |  V  |   9   | BIT  | 10进制     |
-|  B2F  | 链接继电器  |  B  | 0x2F  | BIT  | **16进制** |
-| D100  | 数据寄存器  |  D  |  100  | WORD | 10进制     |
-|  W1F  | 链接寄存器  |  W  | 0x1F  | WORD | **16进制** |
-| TN100 | 定时器当前值 | TN  |  100  | WORD | 10进制     |
-| CN100 | 计数器当前值 | CN  |  100  | WORD | 10进制     |
+1. 本表格中软元件地址采用10进制表示法
+
+|   简写   | 软元件名       |  符号  | 地址  |    类型     | 地址的进制 | FX5U |
+|:------:|:-----------|:----:|:---:|:---------:|:------|------|
+|  SM10  | 特殊继电器      |  SM  | 10  |    BIT    | 10进制  | ✅    |
+|  SD12  | 特殊寄存器      |  SD  | 12  |   WORD    | 10进制  | ✅    |
+|  M100  | 内部继电器      |  M   | 100 |    BIT    | 10进制  | ✅    |
+|  L10   | 锁存继电器      |  L   | 10  |    BIT    | 10进制  | ✅    |
+|  F10   | 报警器        |  F   | 10  |    BIT    | 10进制  | ✅    |
+|   V9   | 变址继电器      |  V   |  9  |    BIT    | 10进制  | ❌    |
+|  D100  | 数据寄存器      |  D   | 100 |   WORD    | 10进制  | ✅    |
+|  TS10  | 定时器触点      |  TS  | 10  |    BIT    | 10进制  | ✅    |
+|  TC10  | 定时器线圈      |  TC  | 10  |    BIT    | 10进制  | ✅    |
+|  TN10  | 定时器当前值     |  TN  | 10  |   WORD    | 10进制  | ✅    |
+| LTS10  | 长定时器触点     | LTS  | 10  |    BIT    | 10进制  | ❌    |
+| LTC10  | 长定时器线圈     | LTC  | 10  |    BIT    | 10进制  | ❌    |
+| LTN10  | 长定时器当前值    | LTN  | 10  | **DWORD** | 10进制  | ❌    |
+| STS10  | 累计定时器触点    | STS  | 10  |    BIT    | 10进制  | ✅    |
+| STC10  | 累计定时器线圈    | STC  | 10  |    BIT    | 10进制  | ✅    |
+| STN10  | 累计定时器当前值   | STN  | 10  |   WORD    | 10进制  | ✅    |
+| LSTS10 | 长累计定时器触点   | LSTS | 10  |    BIT    | 10进制  | ❌    |
+| LSTC10 | 长累计定时器线圈   | LSTC | 10  |    BIT    | 10进制  | ❌    |
+| LSTN10 | 长累计定时器当前值  | LSTN | 10  | **DWORD** | 10进制  | ❌    |
+|  CS10  | 计数器触点      |  CS  | 10  |    BIT    | 10进制  | ✅    |
+|  CC10  | 计数器线圈      |  CC  | 10  |    BIT    | 10进制  | ✅    |
+|  CN10  | 计数器当前值     |  CN  | 10  |   WORD    | 10进制  | ✅    |
+| LCS10  | 长计数器触点     | LCS  | 10  |    BIT    | 10进制  | ❌    |
+| LCC10  | 长计数器线圈     | LCC  | 10  |    BIT    | 10进制  | ❌    |
+| LCN10  | 长计数器当前值    | LCN  | 10  | **DWORD** | 10进制  | ❌    |
+|  Z10   | 变址寄存器      |  Z   | 10  |   WORD    | 10进制  | ✅    |
+|  LZ10  | 变址寄存器      |  LZ  | 10  | **DWORD** | 10进制  | ✅    |
+|  R10   | 文件寄存器块切换方式 |  R   | 10  |   WORD    | 10进制  | ✅    |
+|  RD10  | 刷新数据寄存器    |  RD  | 10  |   WORD    | 10进制  | ❌    |
+
+2. 本表格中软元件地址采用16进制表示法，地址`X1F`对应`X`软元件的`31`号位
+
+|  简写   | 软元件名        | 符号  |  地址   |  类型  | 地址的进制    | FX5U |
+|:-----:|:------------|:---:|:-----:|:----:|:---------|------|
+|  X2F  | 输入          |  X  | 0x2F  | BIT  | **16进制** | ✅    |
+| Y12F  | 输出          |  Y  | 0x12F | BIT  | **16进制** | ✅    |
+|  B2F  | 链接继电器       |  B  | 0x2F  | BIT  | **16进制** | ✅    |
+|  W1F  | 链接寄存器       |  W  | 0x1F  | WORD | **16进制** | ✅    |
+| SB1F  | 链接特殊继电器     | SB  |  1F   | BIT  | **16进制** | ✅    |
+| SW1F  | 链接特殊寄存器     | SW  |  1F   | WORD | **16进制** | ✅    |
+| DX2F  | 直接访问输入      | DX  | 0x2F  | BIT  | **16进制** | ❌    |
+| DY12F | 直接访问输出      | DY  | 0x12F | BIT  | **16进制** | ❌    |
+| ZR1C  | 文件寄存器连号访问方式 | ZR  |  1C   | WORD | **16进制** | ❌    |
 
 > 快捷访问接口
 
@@ -333,3 +366,108 @@ class Demo {
     }
 }
 ```
+
+## PLC
+
+### 1. FX5U访问示例
+```java
+class Demo {
+    public static void main(String[] args) {
+        McPLC mcPLC = new McPLC(EMcSeries.Q_L, "127.0.0.1", 6000);
+
+        // optional
+        mcPLC.setComCallback((tag, bytes) -> System.out.printf("%s[%d] %s%n", tag, bytes.length, HexUtil.toHexString(bytes)));
+
+        // read and write SM
+        mcPLC.writeBoolean("SM21", true);
+        boolean sm = mcPLC.readBoolean("SM21");
+
+        // read and write SD
+        mcPLC.writeUInt16("SD13", 12345);
+        int sd = mcPLC.readUInt16("SD13");
+
+        // read and write X
+        mcPLC.writeBoolean("XFF", true);
+        boolean x = mcPLC.readBoolean("XFF");
+
+        // read and write Y
+        mcPLC.writeBoolean("YFF", true);
+        boolean y = mcPLC.readBoolean("YFF");
+
+        // read and write M
+        mcPLC.writeBoolean("M22", true);
+        boolean m = mcPLC.readBoolean("M22");
+
+        // read and write L
+        mcPLC.writeBoolean("L22", true);
+        boolean l = mcPLC.readBoolean("L22");
+
+        // read and write F
+        mcPLC.writeBoolean("F22", true);
+        boolean f = mcPLC.readBoolean("F22");
+
+        // read and write B
+        mcPLC.writeBoolean("B2F", true);
+        boolean b = mcPLC.readBoolean("B2F");
+
+        // read and write D
+        mcPLC.writeUInt16("D13", 12345);
+        int d = mcPLC.readUInt16("D13");
+
+        // read and write W
+        mcPLC.writeUInt16("W2F", 12345);
+        int w = mcPLC.readUInt16("W2F");
+
+        // read and write T
+        mcPLC.writeBoolean("TS3", true);
+        boolean ts = mcPLC.readBoolean("TS3");
+        mcPLC.writeBoolean("TC3", true);
+        boolean tc = mcPLC.readBoolean("TC3");
+        mcPLC.writeUInt16("TN3", 15);
+        int tn = mcPLC.readUInt16("TN3");
+
+        // read and write ST
+        mcPLC.writeBoolean("STS3", true);
+        boolean sts = mcPLC.readBoolean("STS3");
+        mcPLC.writeBoolean("STC3", true);
+        boolean stc = mcPLC.readBoolean("STC3");
+        mcPLC.writeUInt16("STN3", 15);
+        int stn = mcPLC.readUInt16("STN3");
+
+        // read and write C
+        mcPLC.writeBoolean("CS3", true);
+        boolean cs = mcPLC.readBoolean("CS3");
+        mcPLC.writeBoolean("CC3", true);
+        boolean cc = mcPLC.readBoolean("CC3");
+        mcPLC.writeUInt16("CN3", 15);
+        int cn = mcPLC.readUInt16("CN3");
+
+        // read and write SB
+        mcPLC.writeBoolean("SB3F", true);
+        boolean sb = mcPLC.readBoolean("SB3F");
+
+        // read and write SW
+        mcPLC.writeUInt16("SW2F", 12345);
+        int sw = mcPLC.readUInt16("SW2F");
+
+        // read and write Z
+        mcPLC.writeUInt16("Z10", 12345);
+        int z = mcPLC.readUInt16("Z10");
+
+        // read and write R
+        mcPLC.writeUInt16("R10", 12345);
+        int r = mcPLC.readUInt16("R10");
+
+        mcPLC.close();
+    }
+}
+```
+## 常见问题
+
+> R系列PLC访问ZR软元件的设置
+
+- 对于三菱R系列PLC，打开GXworks3（三菱软件，用于更改其PLC）。进入模块参数 -> make Enable/Disable
+在线更改为“启用所有（SLMP）” -> 点击应用 -> 进入在线菜单 -> 点击写入PLC -> 断电，然后重新启动
+R系列PLC。
+- ZR使用十六进制作为地址。例如：—mcPlc。writint16 ("ZR100“, 4852) ->该值将被写入”ZR256"（256是十进制）
+

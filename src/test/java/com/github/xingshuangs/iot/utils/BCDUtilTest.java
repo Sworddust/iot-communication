@@ -66,7 +66,7 @@ public class BCDUtilTest {
     public void toBytes() {
         int[] testValues = {0, 5, 25, 123, 1234, 987654};
         for (int val : testValues) {
-            byte[] bcd = BCDUtil.toBytes(val);
+            byte[] bcd = BCDUtil.toBytes(val, 2);
             System.out.printf("%d -> BCD: ", val);
             for (byte b : bcd) {
                 System.out.printf("0x%02X ", b);

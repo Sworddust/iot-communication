@@ -105,7 +105,7 @@ public class RequestItem extends RequestBaseItem {
      * @return byte count 字节数
      */
     public int getByteCount() {
-        int multiplier = EParamVariableType.TIMER == this.variableType || EParamVariableType.COUNTER == this.variableType ? 2 : 1;
+        int multiplier = EArea.S7_TIMERS == this.area || EArea.S7_COUNTERS == this.area ? 2 : 1;
         return count * multiplier;
     }
 
@@ -116,17 +116,23 @@ public class RequestItem extends RequestBaseItem {
 
     @Override
     public byte[] toByteArray() {
-        return ByteWriteBuff.newInstance(BYTE_LENGTH)
+        ByteWriteBuff buff = ByteWriteBuff.newInstance(BYTE_LENGTH)
                 .putByte(this.specificationType)
                 .putByte(this.lengthOfFollowing)
                 .putByte(this.syntaxId.getCode())
                 .putByte(this.variableType.getCode())
                 .putShort(this.count)
                 .putShort(this.dbNumber)
-                .putByte(this.area.getCode())
-                // 只有3个字节，因此只取后面的3字节，第一个字节舍弃
-                .putBytes(IntegerUtil.toByteArray((this.byteAddress << 3) + this.bitAddress), 1)
-                .getData();
+                .putByte(this.area.getCode());
+        // 只有3个字节，因此只取后面的3字节，第一个字节舍弃
+        if (this.area == EArea.S7_COUNTERS || this.area == EArea.S7_TIMERS) {
+            // Address(bit) = byte_address * 4
+            buff.putBytes(IntegerUtil.toByteArray(this.byteAddress << 2), 1);
+        } else {
+            // Address(bit) = byte_address * 8 + bit_index
+            buff.putBytes(IntegerUtil.toByteArray((this.byteAddress << 3) + this.bitAddress), 1);
+        }
+        return buff.getData();
     }
 
     @Override
@@ -187,8 +193,13 @@ public class RequestItem extends RequestBaseItem {
         requestItem.count = buff.getUInt16();
         requestItem.dbNumber = buff.getUInt16();
         requestItem.area = EArea.from(buff.getByte());
-        requestItem.byteAddress = IntegerUtil.toInt32In3Bytes(data, 9 + offset) >> 3;
-        requestItem.bitAddress = buff.getByte(11 + offset) & 0x07;
+        if (requestItem.area == EArea.S7_TIMERS || requestItem.area == EArea.S7_COUNTERS) {
+            requestItem.byteAddress = IntegerUtil.toInt32In3Bytes(data, 9 + offset) >> 2;
+            requestItem.bitAddress = 0;
+        } else {
+            requestItem.byteAddress = IntegerUtil.toInt32In3Bytes(data, 9 + offset) >> 3;
+            requestItem.bitAddress = buff.getByte(11 + offset) & 0x07;
+        }
         return requestItem;
     }
 
@@ -207,8 +218,8 @@ public class RequestItem extends RequestBaseItem {
     public static RequestItem createByParams(EParamVariableType variableType, int count, EArea area, int dbNumber, int byteAddress, int bitAddress) {
         RequestItem requestItem = new RequestItem();
         requestItem.setVariableType(variableType);
-        requestItem.setCount(count);
         requestItem.setArea(area);
+        requestItem.setCount(count);
         requestItem.setDbNumber(dbNumber);
         requestItem.setByteAddress(byteAddress);
         requestItem.setBitAddress(bitAddress);

@@ -204,11 +204,12 @@ public class S7PLCServer extends TcpServerBasic {
                 byte[] bytes = this.dataMap.get(area);
                 ByteReadBuff buff = new ByteReadBuff(bytes);
                 byte[] data;
-                if (p.getVariableType() != EParamVariableType.BIT) {
-                    data = buff.getBytes(p.getByteAddress(), p.getByteCount());
-                } else {
+                if (p.getVariableType() == EParamVariableType.BIT) {
                     byte oldData = buff.getByte(p.getByteAddress());
                     data = BooleanUtil.getValue(oldData, p.getBitAddress()) ? new byte[]{(byte) 0x01} : new byte[]{(byte) 0x00};
+                } else {
+                    int num = p.getArea() == EArea.S7_COUNTERS || p.getArea() == EArea.S7_TIMERS ? 2 : 1;
+                    data = buff.getBytes(p.getByteAddress() * num, p.getByteCount());
                 }
                 // 客户端[{}]读取[{}]数据，区域[{}]，字节索引[{}]，位索引[{}]，长度[{}]，区域地址数据{}
                 log.debug("Client[{}] read [{}] data, area[{}], byte index[{}], bit index[{}], length[{}], address data{}",
@@ -251,11 +252,12 @@ public class S7PLCServer extends TcpServerBasic {
                 }
                 // 写入指定地址的数据
                 byte[] bytes = this.dataMap.get(area);
-                if (p.getVariableType() == EParamVariableType.BYTE) {
-                    System.arraycopy(d.getData(), 0, bytes, p.getByteAddress(), d.getData().length);
-                } else {
+                if (p.getVariableType() == EParamVariableType.BIT) {
                     byte newData = BooleanUtil.setBit(bytes[p.getByteAddress()], p.getBitAddress(), d.getData()[0] == 1);
                     System.arraycopy(new byte[]{newData}, 0, bytes, p.getByteAddress(), 1);
+                } else {
+                    int num = p.getArea() == EArea.S7_COUNTERS || p.getArea() == EArea.S7_TIMERS ? 2 : 1;
+                    System.arraycopy(d.getData(), 0, bytes, p.getByteAddress() * num, d.getData().length);
                 }
                 // 客户端[{}]写入[{}]数据，区域[{}]，字节索引[{}]，位索引[{}]，长度[{}]，区域地址数据{}
                 log.debug("Client[{}] write [{}] data, area[{}], byte index[{}], bit index[{}], length[{}], address data{}",

@@ -822,6 +822,21 @@ public class S7PLC extends PLCNetwork {
         this.writeByte(address, bytes);
     }
 
+    /**
+     * Write counter, 2-bytes.
+     * (读取计数器数据, 取值范围：0 … 999（最多 3 位十进制数）)
+     *
+     * @param address address string
+     * @param data    counter data
+     */
+    public void writeCounter(String address, int data) {
+        RequestItem requestItem = AddressUtil.parse(address, 1, EParamVariableType.COUNTER);
+        DataItem dataItem = DataItem.createReq(this.counterToByteArray(data), EDataVariableType.OCTET_STRING);
+        // 暂时特殊处理下，主要是COUNTER读1个数据返回2个字节
+        S7Data req = S7Data.createWriteRequest(requestItem, dataItem);
+        this.readFromServerByPersistence(req);
+    }
+
     //endregion
 
     //region 控制部分
@@ -1405,6 +1420,20 @@ public class S7PLC extends PLCNetwork {
                 .putByte(dateTime.getSecond())
                 .putInteger(dateTime.getNano())
                 .getData();
+    }
+
+    /**
+     * Convert counter to byte array.
+     * (将Counter转换为字节数组)
+     *
+     * @param data Decimal data
+     * @return byte array
+     */
+    public byte[] counterToByteArray(int data) {
+        if (data < 0 || data > 999) {
+            throw new IllegalArgumentException("Counter value must be between 0 and 999");
+        }
+        return BCDUtil.toBytes(data, 2);
     }
 
     //endregion

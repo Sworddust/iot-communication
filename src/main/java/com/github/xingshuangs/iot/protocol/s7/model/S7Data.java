@@ -34,6 +34,7 @@ import com.github.xingshuangs.iot.protocol.s7.enums.EFunctionCode;
 import lombok.Data;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -293,6 +294,18 @@ public class S7Data implements IObjectByteArray {
         s7Data.datum = ReadWriteDatum.createDatum(dataItems);
         s7Data.selfCheck();
         return s7Data;
+    }
+
+    /**
+     * Create read request.
+     * (创建默认读对象)
+     *
+     * @param requestItem request item
+     * @param dataItem    data item
+     * @return S7Data
+     */
+    public static S7Data createWriteRequest(RequestItem requestItem, DataItem dataItem) {
+        return createWriteRequest(Collections.singletonList(requestItem), Collections.singletonList(dataItem));
     }
 
     /**

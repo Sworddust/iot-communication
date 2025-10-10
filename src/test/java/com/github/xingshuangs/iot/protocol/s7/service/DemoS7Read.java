@@ -91,6 +91,10 @@ public class DemoS7Read {
                 .addData("DB1.3", 5);
         List<byte[]> multiByte = s7PLC.readMultiByte(addressRead);
 
+        // PLC300/400 read counter and timer
+        int c2 = s7PLC.readCounter("C2");
+        int t2 = s7PLC.readTimer("T2");
+
         s7PLC.close();
     }
 }

@@ -111,16 +111,13 @@ public class BCDUtil {
      * 5 -> 0x05 <br>
      *
      * @param value int value
+     * @param byteLength byte array length
      * @return byte array
      */
-    public static byte[] toBytes(int value) {
+    public static byte[] toBytes(int value, int byteLength) {
         if (value < 0) {
             throw new IllegalArgumentException("BCD只支持非负整数");
         }
-
-        // 计算需要多少个字节
-        int number = numDigits(value);
-        int byteLength = number % 2 == 0 ? number / 2 : number / 2 + 1;
         byte[] bcd = new byte[byteLength];
         int temp = value;
         // 从低字节向高字节填充
@@ -133,5 +130,26 @@ public class BCDUtil {
         }
 
         return bcd;
+    }
+
+    /**
+     * Int to byte array by BCD.
+     * 根据整数的位数自动分配字节数组长度 <br>
+     * 2301 -> 0x23 0x01 <br>
+     * 123 -> 0x01 0x23 <br>
+     * 5 -> 0x05 <br>
+     *
+     * @param value int value
+     * @return byte array
+     */
+    public static byte[] toBytes(int value) {
+        if (value < 0) {
+            throw new IllegalArgumentException("BCD只支持非负整数");
+        }
+
+        // 计算需要多少个字节
+        int number = numDigits(value);
+        int byteLength = number % 2 == 0 ? number / 2 : number / 2 + 1;
+        return toBytes(value, byteLength);
     }
 }

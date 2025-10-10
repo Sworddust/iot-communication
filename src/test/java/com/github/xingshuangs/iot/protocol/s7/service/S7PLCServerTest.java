@@ -260,6 +260,7 @@ public class S7PLCServerTest {
 
     @Test
     public void readCounter() {
+        this.s7PLC.writeCounter("C1.0", 999);
         int i = this.s7PLC.readCounter("C1.0");
         System.out.println(i);
     }

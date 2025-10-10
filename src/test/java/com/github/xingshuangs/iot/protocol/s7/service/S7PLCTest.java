@@ -220,13 +220,14 @@ public class S7PLCTest {
 
     @Test
     public void readCounter() {
-        int i = this.s7PLC.readCounter("C2.0");
+        this.s7PLC.writeCounter("C1", 999);
+        int i = this.s7PLC.readCounter("C1");
         System.out.println(i);
     }
 
     @Test
     public void readTimer() {
-        int i = this.s7PLC.readTimer("T2.0");
+        int i = this.s7PLC.readTimer("T3");
         System.out.println(i);
     }
 

@@ -66,7 +66,7 @@ public class BCDUtil {
     /**
      * Byte array to int by BCD with max digits.<br>
      * 0x23 0x01 = 2301 <br>
-     * maxDigits = 3 -> 301
+     * maxDigits = 3 to 301
      *
      * @param data      byte array
      * @param maxDigits max digits
@@ -106,9 +106,9 @@ public class BCDUtil {
 
     /**
      * Int to byte array by BCD.
-     * 2301 -> 0x23 0x01 <br>
-     * 123 -> 0x01 0x23 <br>
-     * 5 -> 0x05 <br>
+     * 2301 to 0x23 0x01 <br>
+     * 123 to 0x01 0x23 <br>
+     * 5 to 0x05 <br>
      *
      * @param value int value
      * @param byteLength byte array length
@@ -135,9 +135,9 @@ public class BCDUtil {
     /**
      * Int to byte array by BCD.
      * 根据整数的位数自动分配字节数组长度 <br>
-     * 2301 -> 0x23 0x01 <br>
-     * 123 -> 0x01 0x23 <br>
-     * 5 -> 0x05 <br>
+     * 2301 to 0x23 0x01 <br>
+     * 123 to 0x01 0x23 <br>
+     * 5 to 0x05 <br>
      *
      * @param value int value
      * @return byte array

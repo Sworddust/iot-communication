@@ -31,6 +31,7 @@ import com.github.xingshuangs.iot.common.enums.EDataType;
 import com.github.xingshuangs.iot.common.serializer.IPLCSerializable;
 import com.github.xingshuangs.iot.exceptions.S7CommException;
 import com.github.xingshuangs.iot.protocol.s7.enums.EPlcType;
+import com.github.xingshuangs.iot.protocol.s7.enums.EReturnCode;
 import com.github.xingshuangs.iot.protocol.s7.model.DataItem;
 import com.github.xingshuangs.iot.protocol.s7.model.RequestItem;
 import com.github.xingshuangs.iot.protocol.s7.service.S7PLC;

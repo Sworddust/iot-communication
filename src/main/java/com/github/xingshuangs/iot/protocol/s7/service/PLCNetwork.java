@@ -354,13 +354,13 @@ public class PLCNetwork extends TcpClientBasic {
         ReadWriteParameter parameter = (ReadWriteParameter) req.getParameter();
         if (returnItems.size() != parameter.getItemCount()) {
             // 返回的数据个数和请求的数据个数不一致
-            throw new S7CommException("The returned data quantity is different from the requested data quantity");
+            log.error("The returned data quantity is different from the requested data quantity");
         }
         // 返回结果校验
         for (int i = 0; i < returnItems.size(); i++) {
             if (returnItems.get(i).getReturnCode() != EReturnCode.SUCCESS) {
                 // 返回第[%d]个结果异常，原因：%s
-                throw new S7CommException(String.format("Return [%d] result exception, address[%s], cause: %s", i + 1, parameter.getRequestItems().get(i).address(), returnItems.get(i).getReturnCode().getDescription()));
+                log.error(String.format("Return [%d] result exception, address[%s], cause: %s", i + 1, parameter.getRequestItems().get(i).address(), returnItems.get(i).getReturnCode().getDescription()));
             }
         }
     }

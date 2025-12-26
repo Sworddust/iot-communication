@@ -286,6 +286,12 @@ public class S7Serializer implements IPLCSerializable {
     private <T> void fillField(T result, S7ParseData item) throws IllegalAccessException {
         ByteReadBuff buff = new ByteReadBuff(item.getDataItem().getData());
         item.getField().setAccessible(true);
+
+        if (item.getDataItem().getReturnCode() == EReturnCode.OBJECT_DOES_NOT_EXIST) {
+            item.getField().set(result, null);
+            return;
+        }
+        
         switch (item.getDataType()) {
             case BOOL:
                 item.getField().set(result, buff.getBoolean(0));
